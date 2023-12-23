@@ -11,3 +11,10 @@
   
 # 测试get请求
   curl -i "127.0.0.1:8081/test/get?userid=1"
+  
+
+# 测试post请求
+  curl -i -X POST -d '{"name":"lcy", "hobby":["running","reading","rap"]}' 127.0.0.1:8081/test/post
+  - i 输出 HTTP 头和返回内容。
+  - X 指定与服务器通信使用的请求方法
+  - d 主要是针对 http 协议的 post 请求指定要在消息体中发送的数据

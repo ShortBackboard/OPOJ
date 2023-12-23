@@ -40,6 +40,28 @@ void doTestGet(const httplib::Request &req, httplib::Response &res)
     res.set_content(resjson.toStyledString(), "json");
 }
 
+// post请求测试函数
+void doTestPost(const httplib::Request &req, httplib::Response &res)
+{
+    cout << "post请求测试" << endl;
+    // 获取请求体
+    Json::Value jsonvalue;
+    Json::Reader reader;
+    // 解析传入的json
+    reader.parse(req.body, jsonvalue);
+
+    cout << "获取请求体信息：" << endl;
+    cout << jsonvalue.toStyledString() << endl;
+
+    // 处理逻辑......
+
+    Json::Value resjson;
+    resjson["result"] = "test post : process successfully";
+    resjson["info"] = jsonvalue;
+
+    res.set_content(resjson.toStyledString(), "json");
+}
+
 int main()
 {
   using namespace httplib;
@@ -47,6 +69,9 @@ int main()
 
   // get请求测试
   server.Get("/test/get", doTestGet);
+
+  // post请求测试
+  server.Post("/test/post", doTestPost);
 
   // 设置监听端口
   server.listen("0.0.0.0", 8081);
