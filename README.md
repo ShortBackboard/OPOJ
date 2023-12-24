@@ -24,4 +24,6 @@
 ## MongoDB数据库环境搭建 以及C++调用数据库
 
 使用图形化界面：VSCode 左侧栏中 MongoDB 插件
+启动mongoDb：sudo mongod -f /usr/local/mongo/conf/mongo.conf
 MongoDB学习：https://docs.mongoing.com/
+
