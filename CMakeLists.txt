@@ -11,7 +11,7 @@ include_directories(/usr/local/include/mongocxx/v_noabi /usr/local/include/libmo
 include_directories(/usr/local/include/bsoncxx/v_noabi /usr/local/include/libbson-1.0)
 
 # 查找当前目录下的所有源文件
-aux_source_directory(. DIR_SRCS)
+aux_source_directory(./src DIR_SRCS)
 
 # 指定生成目标
 add_executable(opoj ${DIR_SRCS})
