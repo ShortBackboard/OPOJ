@@ -12,6 +12,7 @@ Control control;
 
 void doGetImage(const httplib::Request &req, httplib::Response &res)
 {
+    // 下载图片1命令：wget http://127.0.0.1:8081/image/1
     printf("doGetImage start!!!\n");
     // 获取图片
     int index = stoi(req.matches[1]);
@@ -67,7 +68,7 @@ void doRegisterUser(const httplib::Request &req, httplib::Response &res)
     reader.parse(req.body, jsonvalue);
     Json::Value resjson = control.RegisterUser(jsonvalue);
 
-    printf("doGetProblem end!!!\n");
+    printf("doRegister end!!!\n");
     SetResponseStatus(resjson, res);
     res.set_content(resjson.toStyledString(), "json");
 }
@@ -803,7 +804,6 @@ void doDeleteSolution(const httplib::Request &req, httplib::Response &res)
     res.set_content(resjson.toStyledString(), "json");
 }
 
-
 void doSelectCommentListByAdmin(const httplib::Request &req, httplib::Response &res)
 {
     printf("doSelectCommentListByAdmin start!!!\n");
@@ -948,6 +948,19 @@ void doGetStatusRecord(const httplib::Request &req, httplib::Response &res)
     res.set_content(resjson.toStyledString(), "json");
 }
 
+// 前端提交代码进行判定并返回结果
+void doPostCode(const httplib::Request &req, httplib::Response &res)
+{
+    Json::Value jsonvalue;
+    Json::Reader reader;
+    // 解析传入的json
+    reader.parse(req.body, jsonvalue);
+    Json::Value resjson = control.GetJudgeCode(jsonvalue);
+
+    SetResponseStatus(resjson, res);
+    res.set_content(resjson.toStyledString(), "json");
+}
+
 void HttpServer::Run()
 {
     using namespace httplib;
@@ -1074,7 +1087,8 @@ void HttpServer::Run()
     // 获取一条测评记录
     server.Get("/statusrecord", doGetStatusRecord);
 
-    
+    // 提交代码
+    server.Post("/problemcode", doPostCode);
 
     server.listen("0.0.0.0", 8081);
 }

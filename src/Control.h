@@ -145,6 +145,9 @@ public:
     // 查询一条详细测评记录
     Json::Value SelectStatusRecord(Json::Value &queryjson);
 
+    // 返回判题信息
+    Json::Value GetJudgeCode(Json::Value judgejson);
+
 private:
 };
 
