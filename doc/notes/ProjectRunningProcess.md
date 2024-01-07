@@ -24,7 +24,7 @@ server.Post("/user/register", doRegisterUser);
 
 ## 2
 
-前端以某种形式封装curl -X POST \ <http://localhost:8081/user/register> \ -d '{"username": "example", "password": "example" ... }'请求，并获取响应。
+前端  curl -i -X POST -d '{"id":"001"...}' 127.0.0.1:8081/test/post 发送请求，并获取响应。
 
 ## 3
 
