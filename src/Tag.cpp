@@ -8,9 +8,22 @@ Tag *Tag::GetInstance()
     static Tag tag;
     return &tag;
 }
+
 Tag::Tag()
 {
 }
+
 Tag::~Tag()
 {
+}
+
+void Tag::InitProblemTags()
+{
+    Json::Value jsonvalue = MoDB::GetInstance()->getProblemTags();
+    problemtags["Tags"] = jsonvalue["values"];
+}
+
+Json::Value Tag::getProblemTags()
+{
+    return problemtags;
 }
