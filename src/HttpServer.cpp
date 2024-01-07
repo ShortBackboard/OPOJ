@@ -32,6 +32,18 @@ void doGetImage(const httplib::Request &req, httplib::Response &res)
     res.set_content(image, "webp");
 }
 
+
+// 获取请求中的Token
+string GetRequestToken(const httplib::Request &req)
+{
+    auto res = req.headers.find("Authorization");
+
+    if (res != req.headers.end())
+        return res->second;
+    else
+        return "0";
+}
+
 // 根据返回结果设置状态码
 bool SetResponseStatus(const Json::Value &json, httplib::Response &res)
 {
@@ -87,6 +99,7 @@ void doLoginUser(const httplib::Request &req, httplib::Response &res)
     res.set_content(resjson.toStyledString(), "json");
 }
 
+
 void doGetUserRank(const httplib::Request &req, httplib::Response &res)
 {
     printf("doGetUserRank start!!!\n");
@@ -105,6 +118,7 @@ void doGetUserRank(const httplib::Request &req, httplib::Response &res)
         Json::Value queryjson;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectUserRank(queryjson);
     }
     printf("doGetUserRank end!!!\n");
@@ -127,6 +141,7 @@ void doGetUserInfo(const httplib::Request &req, httplib::Response &res)
         string userid = req.get_param_value("UserId");
         Json::Value queryjson;
         queryjson["UserId"] = userid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectUserInfo(queryjson);
     }
 
@@ -134,6 +149,7 @@ void doGetUserInfo(const httplib::Request &req, httplib::Response &res)
     SetResponseStatus(resjson, res);
     res.set_content(resjson.toStyledString(), "json");
 }
+
 void doUpdateUserInfo(const httplib::Request &req, httplib::Response &res)
 {
     printf("doUpdateUserInfo start!!!\n");
@@ -141,6 +157,7 @@ void doUpdateUserInfo(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["Token"] = GetRequestToken(req);
     Json::Value resjson = control.UpdateUserInfo(jsonvalue);
     printf("doUpdateUserInfo end!!!\n");
     SetResponseStatus(resjson, res);
@@ -163,12 +180,14 @@ void doGetUserUpdateInfo(const httplib::Request &req, httplib::Response &res)
         string userid = req.get_param_value("UserId");
         Json::Value queryjson;
         queryjson["UserId"] = userid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectUserUpdateInfo(queryjson);
     }
     printf("doGetUserUpdateInfo end!!!\n");
     SetResponseStatus(resjson, res);
     res.set_content(resjson.toStyledString(), "json");
 }
+
 void doGetUserSetInfo(const httplib::Request &req, httplib::Response &res)
 {
     printf("doGetUserSetInfo start!!!\n");
@@ -188,6 +207,7 @@ void doGetUserSetInfo(const httplib::Request &req, httplib::Response &res)
         Json::Value queryjson;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectUserSetInfo(queryjson);
     }
     printf("doGetUserSetInfo end!!!\n");
@@ -211,6 +231,7 @@ void doDeleteUser(const httplib::Request &req, httplib::Response &res)
 
         Json::Value jsonvalue;
         jsonvalue["UserId"] = userid;
+        jsonvalue["Token"] = GetRequestToken(req);
         resjson = control.DeleteUser(jsonvalue);
     }
 
@@ -234,6 +255,7 @@ void doGetProblem(const httplib::Request &req, httplib::Response &res)
         string problemid = req.get_param_value("ProblemId");
         Json::Value queryjson;
         queryjson["ProblemId"] = problemid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectProblem(queryjson);
     }
     printf("doGetProblem end!!!\n");
@@ -265,6 +287,7 @@ void doGetProblemList(const httplib::Request &req, httplib::Response &res)
         queryjson["SearchInfo"] = serachinfo;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectProblemList(queryjson);
     }
     printf("doGetProblemList end!!!\n");
@@ -289,6 +312,7 @@ void doGetProblemListByAdmin(const httplib::Request &req, httplib::Response &res
         Json::Value queryjson;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectProblemListByAdmin(queryjson);
     }
     printf("doGetProblemListByAdmin end!!!\n");
@@ -313,6 +337,7 @@ void doGetProblemInfo(const httplib::Request &req, httplib::Response &res)
 
         Json::Value queryjson;
         queryjson["ProblemId"] = problemid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectProblemInfoByAdmin(queryjson);
     }
     printf("doGetProblemInfo end!!!\n");
@@ -327,6 +352,7 @@ void doEditProblem(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["datainfo"]["Token"] = GetRequestToken(req);
     Json::Value resjson = control.EditProblem(jsonvalue["datainfo"]);
     printf("doEditProblem end!!!\n");
     SetResponseStatus(resjson, res);
@@ -347,6 +373,7 @@ void doDeleteProblem(const httplib::Request &req, httplib::Response &res)
         string problemid = req.get_param_value("ProblemId");
 
         Json::Value deletejson;
+        deletejson["Token"] = GetRequestToken(req);
         deletejson["ProblemId"] = problemid;
         resjson = control.DeleteProblem(deletejson);
     }
@@ -386,6 +413,7 @@ void doGetAnnouncementList(const httplib::Request &req, httplib::Response &res)
         Json::Value queryjson;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectAnnouncementList(queryjson);
     }
 
@@ -412,6 +440,7 @@ void doGetAnnouncementListByAdmin(const httplib::Request &req, httplib::Response
         Json::Value queryjson;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectAnnouncementListByAdmin(queryjson);
     }
 
@@ -435,6 +464,7 @@ void doGetAnnouncement(const httplib::Request &req, httplib::Response &res)
         string announcementid = req.get_param_value("AnnouncementId");
         Json::Value queryjson;
         queryjson["AnnouncementId"] = announcementid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectAnnouncement(queryjson);
     }
     printf("doGetAnnouncement end!!!\n");
@@ -458,6 +488,7 @@ void doSelectAnnouncement(const httplib::Request &req, httplib::Response &res)
 
         Json::Value queryjson;
         queryjson["AnnouncementId"] = announcementid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectAnnouncementByEdit(queryjson);
     }
     printf("doSelectAnnouncement end!!!\n");
@@ -472,6 +503,7 @@ void doInsertAnnouncement(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["Token"] = GetRequestToken(req);
     Json::Value resjson = control.InsertAnnouncement(jsonvalue);
     printf("doInsertAnnouncement end!!!\n");
     SetResponseStatus(resjson, res);
@@ -485,6 +517,7 @@ void doUpdateAnnouncement(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["Token"] = GetRequestToken(req);
     Json::Value resjson = control.UpdateAnnouncement(jsonvalue);
     printf("doUpdateAnnouncement end!!!\n");
     SetResponseStatus(resjson, res);
@@ -506,6 +539,7 @@ void doDeleteAnnouncement(const httplib::Request &req, httplib::Response &res)
         string announcementid = req.get_param_value("AnnouncementId");
         Json::Value deletejson;
         deletejson["AnnouncementId"] = announcementid;
+        deletejson["Token"] = GetRequestToken(req);
         resjson = control.DeleteAnnouncement(deletejson);
     }
     printf("doDeleteAnnouncement end!!!\n");
@@ -535,6 +569,7 @@ void doGetDiscussList(const httplib::Request &req, httplib::Response &res)
         queryjson["SearchInfo"] = searchinfo;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectDiscussList(queryjson);
     }
     printf("doGetDiscussList end!!!\n");
@@ -558,6 +593,7 @@ void doGetDiscussListByAdmin(const httplib::Request &req, httplib::Response &res
         Json::Value queryjson;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectDiscussListByAdmin(queryjson);
     }
     printf("doGetDiscussListByAdmin end!!!\n");
@@ -578,6 +614,7 @@ void doGetDiscuss(const httplib::Request &req, httplib::Response &res)
         string discussid = req.get_param_value("DiscussId");
         Json::Value queryjson;
         queryjson["DiscussId"] = discussid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectDiscuss(queryjson);
     }
     printf("doGetDiscuss end!!!\n");
@@ -599,6 +636,7 @@ void doSelectDiscussByEdit(const httplib::Request &req, httplib::Response &res)
         string discussid = req.get_param_value("DiscussId");
         Json::Value queryjson;
         queryjson["DiscussId"] = discussid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectDiscussByEdit(queryjson);
     }
     printf("doSelectDiscussByEdit end!!!\n");
@@ -613,6 +651,7 @@ void doInsertDiscuss(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["Token"] = GetRequestToken(req);
     Json::Value resjson = control.InsertDiscuss(jsonvalue);
     printf("doInsertSolution end!!!\n");
     SetResponseStatus(resjson, res);
@@ -626,6 +665,7 @@ void doUpdateDiscuss(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["Token"] = GetRequestToken(req);
     Json::Value resjson = control.UpdateDiscuss(jsonvalue);
     printf("doUpdateSolution end!!!\n");
     SetResponseStatus(resjson, res);
@@ -650,6 +690,7 @@ void doDeleteDiscuss(const httplib::Request &req, httplib::Response &res)
         Json::Value deletejson;
         deletejson["DiscussId"] = discussid;
         deletejson["UserId"] = userid;
+        deletejson["Token"] = GetRequestToken(req);
         resjson = control.DeleteDiscuss(deletejson);
     }
     printf("doDeleteDiscuss end!!!\n");
@@ -680,6 +721,7 @@ void doGetSolutionList(const httplib::Request &req, httplib::Response &res)
         queryjson["SearchInfo"] = searchinfo;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectSolutionList(queryjson);
     }
     printf("doGetSolutionList end!!!\n");
@@ -704,6 +746,7 @@ void doGetSolutionListByAdmin(const httplib::Request &req, httplib::Response &re
         Json::Value queryjson;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectSolutionListByAdmin(queryjson);
     }
     printf("doGetSolutionListByAdmin end!!!\n");
@@ -725,6 +768,7 @@ void doGetSolution(const httplib::Request &req, httplib::Response &res)
         string solutionid = req.get_param_value("SolutionId");
         Json::Value queryjson;
         queryjson["SolutionId"] = solutionid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectSolution(queryjson);
     }
     printf("doGetSolution end!!!\n");
@@ -747,6 +791,7 @@ void doSelectSolutionByEdit(const httplib::Request &req, httplib::Response &res)
         string solutionid = req.get_param_value("SolutionId");
         Json::Value queryjson;
         queryjson["SolutionId"] = solutionid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectSolutionByEdit(queryjson);
     }
     printf("doSelectSolutionByEdit end!!!\n");
@@ -761,6 +806,7 @@ void doInsertSolution(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["Token"] = GetRequestToken(req);
     Json::Value resjson = control.InsertSolution(jsonvalue);
     printf("doInsertSolution end!!!\n");
     SetResponseStatus(resjson, res);
@@ -774,6 +820,7 @@ void doUpdateSolution(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["Token"] = GetRequestToken(req);
     Json::Value resjson = control.UpdateSolution(jsonvalue);
     printf("doUpdateSolution end!!!\n");
     SetResponseStatus(resjson, res);
@@ -797,6 +844,7 @@ void doDeleteSolution(const httplib::Request &req, httplib::Response &res)
         Json::Value deletejson;
         deletejson["SolutionId"] = solutionid;
         deletejson["UserId"] = userid;
+        deletejson["Token"] = GetRequestToken(req);
         resjson = control.DeleteSolution(deletejson);
     }
     printf("doDeleteSolution end!!!\n");
@@ -822,6 +870,7 @@ void doSelectCommentListByAdmin(const httplib::Request &req, httplib::Response &
         Json::Value queryjson;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectCommentListByAdmin(queryjson);
     }
     printf("doSelectCommentListByAdmin end!!!\n");
@@ -852,6 +901,7 @@ void doGetComment(const httplib::Request &req, httplib::Response &res)
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
         queryjson["SonNum"] = sonsnum;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.GetComment(queryjson);
     }
 
@@ -867,6 +917,7 @@ void doInsertComment(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["Info"]["Token"] = GetRequestToken(req);
     Json::Value resjson = control.InsertComment(jsonvalue["Info"]);
     printf("doInsertComment end!!!\n");
     SetResponseStatus(resjson, res);
@@ -888,6 +939,7 @@ void doDeleteComment(const httplib::Request &req, httplib::Response &res)
         Json::Value deletejson;
         deletejson["ArticleId"] = articleid;
         deletejson["CommentId"] = commentid;
+        deletejson["Token"] = GetRequestToken(req);
         resjson = control.DeleteComment(deletejson);
     }
     printf("doDeleteComment end!!!\n");
@@ -919,6 +971,7 @@ void doGetStatusRecordList(const httplib::Request &req, httplib::Response &res)
         queryjson["SearchInfo"] = searchinfo;
         queryjson["Page"] = page;
         queryjson["PageSize"] = pagesize;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectStatusRecordList(queryjson);
     }
     printf("doGetStatusRecordList end!!!\n");
@@ -941,6 +994,7 @@ void doGetStatusRecord(const httplib::Request &req, httplib::Response &res)
 
         Json::Value queryjson;
         queryjson["SubmitId"] = submitid;
+        queryjson["Token"] = GetRequestToken(req);
         resjson = control.SelectStatusRecord(queryjson);
     }
     printf("doGetStatusRecordInfo end!!!\n");
@@ -955,8 +1009,23 @@ void doPostCode(const httplib::Request &req, httplib::Response &res)
     Json::Reader reader;
     // 解析传入的json
     reader.parse(req.body, jsonvalue);
+    jsonvalue["Token"] = GetRequestToken(req);
     Json::Value resjson = control.GetJudgeCode(jsonvalue);
 
+    SetResponseStatus(resjson, res);
+    res.set_content(resjson.toStyledString(), "json");
+}
+
+// 通过Token登录用户获取信息
+void doGetUserInfoByToken(const httplib::Request &req, httplib::Response &res)
+{
+    printf("doGetUserInfoByToken start!!!\n");
+    Json::Value queryjson;
+
+    queryjson["Token"] = GetRequestToken(req);
+    Json::Value resjson = control.LoginUserByToken(queryjson);
+
+    printf("doGetUserInfoByToken end!!!\n");
     SetResponseStatus(resjson, res);
     res.set_content(resjson.toStyledString(), "json");
 }
@@ -1089,6 +1158,9 @@ void HttpServer::Run()
 
     // 提交代码
     server.Post("/problemcode", doPostCode);
+
+    // 返回用户信息 Token登录
+    server.Get("/user/tokenlogin", doGetUserInfoByToken);
 
     server.listen("0.0.0.0", 8081);
 }

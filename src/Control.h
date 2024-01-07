@@ -148,6 +148,9 @@ public:
     // 返回判题信息
     Json::Value GetJudgeCode(Json::Value judgejson);
 
+    // 登录用户通过Token
+    Json::Value LoginUserByToken(Json::Value &loginjson);
+
 private:
 };
 
