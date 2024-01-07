@@ -328,3 +328,13 @@ Json::Value Control::DeleteComment(Json::Value &deletejson)
     resjson["Result"] = "Success";
     return resjson;
 }
+
+Json::Value Control::SelectStatusRecordList(Json::Value &queryjson)
+{
+    return StatusRecordList::GetInstance()->SelectStatusRecordList(queryjson);
+}
+
+Json::Value Control::SelectStatusRecord(Json::Value &queryjson)
+{
+    return StatusRecordList::GetInstance()->SelectStatusRecord(queryjson);
+}

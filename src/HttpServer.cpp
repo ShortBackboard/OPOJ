@@ -895,6 +895,59 @@ void doDeleteComment(const httplib::Request &req, httplib::Response &res)
     res.set_content(resjson.toStyledString(), "json");
 }
 
+void doGetStatusRecordList(const httplib::Request &req, httplib::Response &res)
+{
+    printf("doGetStatusRecordList start!!!\n");
+    Json::Value resjson;
+
+    if (!req.has_param("SearchInfo") || !req.has_param("Page") || !req.has_param("PageSize"))
+    {
+        resjson["Result"] = "400";
+        resjson["Reason"] = "缺少请求参数！";
+    }
+    else
+    {
+        Json::Value searchinfo;
+        Json::Reader reader;
+        // 解析传入的json
+        reader.parse(req.get_param_value("SearchInfo"), searchinfo);
+
+        string page = req.get_param_value("Page");
+        string pagesize = req.get_param_value("PageSize");
+
+        Json::Value queryjson;
+        queryjson["SearchInfo"] = searchinfo;
+        queryjson["Page"] = page;
+        queryjson["PageSize"] = pagesize;
+        resjson = control.SelectStatusRecordList(queryjson);
+    }
+    printf("doGetStatusRecordList end!!!\n");
+    SetResponseStatus(resjson, res);
+    res.set_content(resjson.toStyledString(), "json");
+}
+void doGetStatusRecord(const httplib::Request &req, httplib::Response &res)
+{
+    printf("doGetStatusRecordInfo start!!!\n");
+
+    Json::Value resjson;
+    if (!req.has_param("SubmitId"))
+    {
+        resjson["Result"] = "400";
+        resjson["Reason"] = "缺少请求参数！";
+    }
+    else
+    {
+        string submitid = req.get_param_value("SubmitId");
+
+        Json::Value queryjson;
+        queryjson["SubmitId"] = submitid;
+        resjson = control.SelectStatusRecord(queryjson);
+    }
+    printf("doGetStatusRecordInfo end!!!\n");
+    SetResponseStatus(resjson, res);
+    res.set_content(resjson.toStyledString(), "json");
+}
+
 void HttpServer::Run()
 {
     using namespace httplib;
@@ -939,7 +992,7 @@ void HttpServer::Run()
     // 获取标签
     server.Get("/tags", doGetTags);
 
-        // --------------公告--------------------
+    // --------------公告--------------------
     // 获取公告列表
     server.Get("/announcementlist", doGetAnnouncementList);
 
@@ -961,7 +1014,7 @@ void HttpServer::Run()
     // 用户删除公告
     server.Delete("/announcement", doDeleteAnnouncement);
 
-        // -------------讨论------------------------
+    // -------------讨论------------------------
     // 获取讨论列表
     server.Get("/discusslist", doGetDiscussList);
 
@@ -983,7 +1036,7 @@ void HttpServer::Run()
     // 用户删除讨论
     server.Delete("/discuss", doDeleteDiscuss);
 
-        // -------------题解------------------------
+    // -------------题解------------------------
     // 获取题解列表
     server.Get("/solutionlist", doGetSolutionList);
 
@@ -1014,6 +1067,13 @@ void HttpServer::Run()
     server.Post("/comment/insert", doInsertComment);
     // 删除评论
     server.Delete("/comment", doDeleteComment);
+
+    // ---------------测评-----------------
+    // 获取状态记录
+    server.Get("/statusrecordlist", doGetStatusRecordList);
+    // 获取一条测评记录
+    server.Get("/statusrecord", doGetStatusRecord);
+
     
 
     server.listen("0.0.0.0", 8081);
